@@ -1,37 +1,60 @@
 import paramiko
 import re
 
-# 实例化一个transport对象
-transport = paramiko.Transport(('192.168.47.236',22))
-# 建立连接
-transport.connect(username='pythonTest',password='qweqwe')
-# 建立ssh对象
-ssh = paramiko.SSHClient()
-# 绑定transport到ssh对象
-ssh._transport=transport
-# 执行命令
-stdin,stdout,stderr=ssh.exec_command('ls')
-# 打印输出
-ff =stdout.read().decode()
-#print(a)
-#print(type(a))
-print('_________________________________________________')
-# 匹配caifu_custquery.log.日期格式
-a = re.finditer('caifu_custquery\.log\.\d{8}',ff)
+targethost = "192.168.47.236"
+targetport = 22
+timeout = 30
+sshuser = "pythonTest"
+sshpassword = "qweqwe"
 
-# 匹配caifu_log.日期格式
+# 登陆sftp并执行相应的命令
+def sftp_command(command):
+    try:
+        # 实例化一个连接
+        transport = paramiko.Transport(targethost,targetport)
+        # 建立链接
+        transport.connect(username=sshuser,password=sshpassword)
+        # 建立ssh对象
+        ssh = paramiko.SSHClient()
+        # 绑定transport到ssh对象
+        ssh._transport=transport
+        # 执行命令
+        stdin,stdout,stderr= ssh.exec_command(command)
+        # 打印输出
+        ff = stdout.read().decode()
+        print(ff)
+    except Exception as e:
+        print("error啦",e)
+    finally:
+        ssh.close()
 
-b = re.finditer('(caifu){0,1}_log\.\d{8}', ff)
 
-# 匹配中文格式的log.日期格式
-c = re.finditer('[新建文本文档]{6}\D{0,1}([(]{1}\d{1}[)]{1}){0,1}\D{1,11}([(]{1}\d[)]{1}\D){0,1}\d{8}', ff)
+def sftp_down_file():
+    try:
+        transport = paramiko.Transport(targethost,targetport)
+        transport.connect(username=sshuser,password=sshpassword)
+        # sftp链接
+        ssh = paramiko.SFTPClient.from_transport(transport)
+        aalist = ssh.listdir()
+        print(aalist)
+        #print(type(aalist))
+        # 编译含有8位数字的文件
+        paconbile = re.compile(r'\d{8,}')
 
-for aa in a:
+        for bb in aalist:
+            bblist = paconbile.findall(bb)
+            #print("kan",bblist,bb)
+            for cclist in bblist:
+                if cclist > '20170711':
+                    print(bb)
 
-    print(aa.group())
 
-for bb in b:
-    print(bb.group())
 
-for cc in c:
-    print(cc.group())
+    except Exception as e:
+        print("报错啦",e)
+    finally:
+        ssh.close()
+
+if __name__ == '__main__':
+    #sftp_command('ls -l')
+    sftp_down_file()
