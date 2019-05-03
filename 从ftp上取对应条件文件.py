@@ -47,14 +47,74 @@ def sftp_down_file():
             for cclist in bblist:
                 if cclist > '20170711':
                     print(bb)
-
-
-
     except Exception as e:
         print("报错啦",e)
     finally:
         ssh.close()
 
+import ftplib
+import socket
+
+def ftp_login_download():
+    # ftp登陆
+
+    HOST = "ftp.acc.umu.se"
+    DIR = 'Public/EFLIB/'
+    FILE = 'README'
+    # 1. 客户端链接远程主机上的FTP服务器
+
+    try:
+        f = ftplib.FTP()
+        # 设置调试级别方便调试
+        f.set_debuglevel(2)
+        # 链接对应的主机
+        f.connect(HOST)
+    except Exception as e:
+        print(e)
+        exit()
+    finally:
+        print("connectted to host {0} ".format(HOST))
+
+    # 2. 客户端输入用户名和密码（或者“anonymous”和电子邮件地址）
+    try:
+        # 登录如果没有输入用户信息，则默认使用匿名登录
+        f.login()
+    except Exception as e:
+        print(e)
+        exit()
+    finally:
+
+        print('Logged in as "anonymous"')
+
+    # 3. 客户端和服务器进行各种文件传输和信息查询操作
+    try:
+
+        # 更改当前目录到指定目录
+        f.cwd(DIR)
+    except Exception as e:
+        print(e)
+        exit()
+    finally:
+        print('changed dir {0}'.format(DIR))
+
+    try:
+        # 从FTP服务器上下载文件
+        # 第一个参数是ftp命令
+        # 第二个参数是回调函数
+        # 此函数的意思是，执行RETR命令，下载文件到本地后，运行回调函数
+        f.retrbinary('RETR {0}'.format(FILE), open(FILE, 'wb').write)
+    except Exception as e:
+        print(e)
+        exit()
+
+    # 4. 客户端从远程FTP服务器退出，结束传输
+    f.quit()
+
+
+
+
+
 if __name__ == '__main__':
-    #sftp_command('ls -l')
-    sftp_down_file()
+    # sftp_command('ls -l')
+    # sftp_down_file()
+    ftp_login_download()
