@@ -111,10 +111,8 @@ def ftp_login_download():
     f.quit()
 
 
-
-
-
 if __name__ == '__main__':
     # sftp_command('ls -l')
     # sftp_down_file()
     ftp_login_download()
+
