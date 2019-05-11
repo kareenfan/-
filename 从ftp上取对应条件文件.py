@@ -1,5 +1,6 @@
 import paramiko
 import re
+import os
 
 targethost = "192.168.47.236"
 targetport = 22
@@ -29,7 +30,7 @@ def sftp_command(command):
         ssh.close()
 
 
-def sftp_down_file():
+def sftp_down_file(begindate,enddate):
     try:
         transport = paramiko.Transport(targethost,targetport)
         transport.connect(username=sshuser,password=sshpassword)
@@ -41,12 +42,17 @@ def sftp_down_file():
         # 编译含有8位数字的文件
         paconbile = re.compile(r'\d{8,}')
 
-        for bb in aalist:
-            bblist = paconbile.findall(bb)
+        for remotefile in aalist:
+            bblist = paconbile.findall(remotefile)
             #print("kan",bblist,bb)
             for cclist in bblist:
-                if cclist > '20170711':
-                    print(bb)
+                if (cclist > begindate and cclist < enddate):
+                    print(remotefile)
+                    # 路径拼接
+                    localfile = os.path.join('/Users/kareen/Documents/tmp/',remotefile)
+                    print(localfile)
+                    ssh.get(remotepath=remotefile, localpath=localfile)
+
     except Exception as e:
         print("报错啦",e)
     finally:
@@ -113,6 +119,5 @@ def ftp_login_download():
 
 if __name__ == '__main__':
     # sftp_command('ls -l')
-    # sftp_down_file()
-    ftp_login_download()
-
+    sftp_down_file('20170102','20180101')
+    # ftp_login_download()
