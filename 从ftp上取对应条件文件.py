@@ -59,7 +59,6 @@ def sftp_down_file(begindate,enddate):
         ssh.close()
 
 import ftplib
-import socket
 
 def ftp_login_download():
     # ftp登陆
