@@ -50,8 +50,22 @@ urlpatterns = [
     path(r'extrem/',myview.extrem,{'name':'fanjj'}),
 
     # 反相解析
-    path(r'youna',myview.revparse,name='newfanjj'),
+    path(r'youna/',myview.revparse,name='newfanjj'),
 #     创建视图
-    path(r'myviews',myview.myview),
+    path(r'myviews/',myview.myview),
+#     重定向，服务器跳转
+    path(r'index_3/',myview.index_3),
+#     GET属性练习
+#     http://127.0.0.1:8000/index_get/?name=kareen&age=28
+#     可以在问号后面跟参数访问
+    path(r'index_get/',myview.mygetvalue),
+#     POST属性练习，从表单页面提交后，在下一个页面获取
+    path(r'index_get1/',myview.mygetvalue1),
+    path(r'index_post/',myview.mypostvalue),
+# 使用模板返回练习
+    path(r'rendertest1/',myview.rendertest1),
+    path(r'rendertest2/', myview.rendertest2),
+#     系统内置视图，可直接使用，例如404报错
+    path(r'get404/',myview.get404),
 
 ]
